@@ -135,22 +135,24 @@ while True:
     if "В запросе должны быть выставлены cookie:" in result_html:
         cookies = parser_html(result_html[result_html.find("В запросе должны быть выставлены cookie:"):])
     cookies["user"] = ID
-
-    if "Отправьте GET-запрос" in result_html:
-        rout_url = parser_html_route(result_html[result_html.find("Отправьте GET-запрос"):])
-        result_html = request.GET(path=rout_url, cookies=cookies, params=params, headers=headers)
-    elif "Отправьте POST-запрос" in result_html:
-        rout_url = parser_html_route(result_html[result_html.find("Отправьте POST-запрос"):])
-        result_html = request.POST(path=rout_url, cookies=cookies, params=params, headers=headers, data=body)
-    elif "Загрузите файлы по адресу" in result_html:
-        rout_url = parser_html_route(result_html[result_html.find("Загрузите файлы по адресу"):])
-        files_dict = parser_html(result_html)
-        result_html = request.POST_FILES(path=rout_url, cookies=cookies, files=files_dict)
-    elif "Перейдите по" in result_html:
-        rout_url = parser_html_route_teg_a(result_html[result_html.find("Перейдите по"):])
-        result_html = request.GET(path=rout_url, cookies=cookies, params=params, headers=headers)
-    else:
-        print(result_html)
-        break
+    try:
+        if "Отправьте GET-запрос" in result_html:
+            rout_url = parser_html_route(result_html[result_html.find("Отправьте GET-запрос"):])
+            result_html = request.GET(path=rout_url, cookies=cookies, params=params, headers=headers)
+        elif "Отправьте POST-запрос" in result_html:
+            rout_url = parser_html_route(result_html[result_html.find("Отправьте POST-запрос"):])
+            result_html = request.POST(path=rout_url, cookies=cookies, params=params, headers=headers, data=body)
+        elif "Загрузите файлы по адресу" in result_html:
+            rout_url = parser_html_route(result_html[result_html.find("Загрузите файлы по адресу"):])
+            files_dict = parser_html(result_html)
+            result_html = request.POST_FILES(path=rout_url, cookies=cookies, files=files_dict)
+        elif "Перейдите по" in result_html:
+            rout_url = parser_html_route_teg_a(result_html[result_html.find("Перейдите по"):])
+            result_html = request.GET(path=rout_url, cookies=cookies, params=params, headers=headers)
+        else:
+            print(result_html)
+            break
+    except OSError:
+        request_count -= 1
 
 print(f"Запросов:{request_count}")
